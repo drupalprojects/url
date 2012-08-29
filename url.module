@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Provides a URL field type that stores external links with optional titles.
+ */
+
 require_once(dirname(__FILE__) . '/url.field.inc');
 
 /**

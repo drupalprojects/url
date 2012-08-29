@@ -92,7 +92,7 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
   $element['value'] = $element + array(
     '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
     '#size' => $instance['widget']['settings']['size'],
-    '#maxlength' => 3000,
+    '#maxlength' => 2048,
   );
 
   if (module_exists('elements')) {
@@ -151,7 +151,6 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
       '#options' => array(
         'query' => $options['query'],
         'fragment' => $options['fragment'],
-        'attributes'= > isset($item['attributes']) ? $item['attributes'] : array(),
       ),
     );
 
