@@ -144,7 +144,6 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
       '#options' => array(
         'query' => $options['query'],
         'fragment' => $options['fragment'],
-        'attributes'= > isset($item['attributes']) ? $item['attributes'] : array(),
       ),
     );
 
