@@ -153,16 +153,52 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
  */
 function url_field_formatter_info() {
   $info['url_default'] = array(
-    'label' => t('Default'),
+    'label' => t('Link'),
     'field types' => array('url'),
     'settings' => array(
-      // @todo Expose these options in the widget settings form.
-      'display' => 'title',
       'trim_length' => 80,
     ),
   );
 
   return $info;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function url_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $element['trim_length'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Trim the link text to certain number of characters'),
+    '#description' => t('To leave long link text alone, leave this blank.'),
+    '#default_value' => $settings['trim_length'],
+    '#size' => 10,
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function url_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $summary = '';
+
+  if (!empty($settings['trim_length'])) {
+    $summary = t('Link text trimmed to @char characters.', array('@char' => $settings['trim_length']));
+  }
+  else {
+    $summary = t('Link text not trimmed.');
+  }
+
+  return $summary;
 }
 
 /**
@@ -177,30 +213,30 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
     // Parse out query string and fragment from the URL value.
     $options = drupal_parse_url($item['value']);
 
+    // By default use the URL as the link title.
+    $link_title = $item['value'];
+
+    // If the title field value is available, use it for the link title.
+    if (!empty($item['title'])) {
+      // Unsanitizied token replacement here because $options['HTML'] is FALSE
+      // by default in theme_link().
+      $link_title = token_replace($item['title'], array($entity_type => $entity), array('sanitize' => FALSE, 'clear' => TRUE));
+    }
+
+    // Trim the link title to the desired length.
+    if (!empty($settings['trim_length'])) {
+      $link_title = truncate_utf8($link_title, $settings['trim_length'], FALSE, TRUE);
+    }
+
     $element[$delta] = array(
       '#type' => 'link',
-      '#title' => $item['value'],
+      '#title' => $link_title,
       '#href' => $options['path'],
       '#options' => array(
         'query' => $options['query'],
         'fragment' => $options['fragment'],
       ),
     );
-
-    $title = &$element[$delta]['#title'];
-
-    // If the title field data is available and it should be displayed, swap
-    // the title out after it has been replaced with any tokens.
-    if (!empty($item['title']) && $settings['display'] == 'title') {
-      // Unsanitizied token replacement here because $options['HTML'] is FALSE
-      // by default in theme_link().
-      $title = token_replace($item['title'], array($entity_type => $entity), array('sanitize' => FALSE, 'clear' => TRUE));
-    }
-
-    // Trim the link to an accepted length.
-    if (!empty($settings['trim_length'])) {
-      $title = truncate_utf8($title, $settings['trim_length']);
-    }
   }
 
   return $element;
