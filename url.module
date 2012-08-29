@@ -6,12 +6,25 @@
  */
 
 /**
+ * Implements hook_help().
+ */
+function url_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#url':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The URL module defines a simple link field type for the Field module. Links are external URLs, can have an optional title for each link, and they can be formatted when displayed. See the <a href="@field-help">Field module help page</a> for more information about fields.', array('@field-help' => url('admin/help/field'))) . '</p>';
+      return $output;
+  }
+}
+
+/**
  * Implements hook_field_info().
  */
 function url_field_info() {
   $info['url'] = array(
     'label' => t('URL'),
-    'description' => t('This field stores a URL with an optional title.'),
+    'description' => t('This field stores URLs with an optional title.'),
     'instance_settings' => array(
       'title_field' => 0,
       'title_fetch' => 0,
@@ -33,7 +46,7 @@ function url_field_instance_settings_form($field, $instance) {
     '#type' => 'checkbox',
     '#title' => t('Enable <em>Title</em> field'),
     '#default_value' => $settings['title_field'],
-    '#description' => t('The title attribute is used as a tooltip when the mouse hovers over the image.'),
+    '#description' => t('The title attribute is displayed when the link is displayed.'),
   );
   $form['title_fetch'] = array(
     '#type' => 'checkbox',
@@ -42,13 +55,6 @@ function url_field_instance_settings_form($field, $instance) {
   );
 
   return $form;
-}
-
-/**
- * Implements hook_field_is_empty().
- */
-function url_field_is_empty($item, $field) {
-  return !isset($item['value']) || $item['value'] === '';
 }
 
 /**
@@ -73,6 +79,13 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
       }
     }
   }
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function url_field_is_empty($item, $field) {
+  return !isset($item['value']) || $item['value'] === '';
 }
 
 /**
@@ -119,9 +132,10 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
  */
 function url_field_formatter_info() {
   $info['url_default'] = array(
-    'label' => 'URL',
+    'label' => t('Default'),
     'field types' => array('url'),
     'settings' => array(
+      // @todo Expose these options in the widget settings form.
       'display' => 'title',
       'trim_length' => 80,
     ),
@@ -135,8 +149,8 @@ function url_field_formatter_info() {
  */
 function url_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-  $intance_settings = $display['settings'];
-  $widget_settings = $display['widget']['settings'];
+  $intance_settings = $instance['settings'];
+  $widget_settings = $instance['widget']['settings'];
 
   foreach ($items as $delta => $item) {
     // Parse out query string and fragment from the URL value.
