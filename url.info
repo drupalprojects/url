@@ -1,4 +1,4 @@
-name = URL field
-description = A URL field type that stores external links with optional titles.
+name = URL
+description = Defines a simple URL field type.
 core = 8.x
 dependencies[] = field

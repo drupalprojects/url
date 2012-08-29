@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Provides an URL field type that stores external links with optional titles.
+ * Provides a URL field type that stores external links with optional titles.
  */
 
 /**
@@ -98,7 +98,7 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
     '#type' => 'url',
     '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
     '#size' => $instance['widget']['settings']['size'],
-    '#maxlength' => 3000,
+    '#maxlength' => 2048,
   );
 
   if (!empty($settings['title_field'])) {
