@@ -90,18 +90,11 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
   $settings = $instance['settings'];
 
   $element['value'] = $element + array(
+    '#type' => 'url',
     '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
     '#size' => $instance['widget']['settings']['size'],
     '#maxlength' => 3000,
   );
-
-  if (module_exists('elements')) {
-    $element['value']['#type'] = 'urlfield';
-  }
-  else {
-    $element['value']['#type'] = 'textfield';
-    $element['value']['#element_validate'] = array('url_validate_url');
-  }
 
   if (!empty($settings['title_field'])) {
     $element['title'] = array(
