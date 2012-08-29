@@ -166,7 +166,7 @@ function url_field_formatter_info() {
 function url_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
   $intance_settings = $instance['settings'];
-  $widget_settings = $instance['widget']['settings'];
+  $settings = $display['settings'];
 
   foreach ($items as $delta => $item) {
     // Parse out query string and fragment from the URL value.
@@ -186,15 +186,15 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
 
     // If the title field data is available and it should be displayed, swap
     // the title out after it has been replaced with any tokens.
-    if (!empty($item['title']) && $widget_settings['display'] == 'title') {
+    if (!empty($item['title']) && $settings['display'] == 'title') {
       // Unsanitizied token replacement here because $options['HTML'] is FALSE
       // by default in theme_link().
       $title = token_replace($item['title'], array($entity_type => $entity), array('sanitize' => FALSE, 'clear' => TRUE));
     }
 
     // Trim the link to an accepted length.
-    if (!empty($widget_settings['trim_length'])) {
-      $title = truncate_utf8($title, $widget_settings['trim_length']);
+    if (!empty($settings['trim_length'])) {
+      $title = truncate_utf8($title, $settings['trim_length']);
     }
   }
 
