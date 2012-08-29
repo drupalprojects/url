@@ -71,12 +71,7 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
   foreach ($items as $delta => $item) {
     if (!empty($item['value']) && empty($item['title'])) {
       // Extract the title from a request to the URL.
-      $request = drupal_http_request($item['value']);
-      if (empty($request->error) && $request->code == 200 && !empty($request->data)) {
-        if (preg_match('!<title>(.*?)</title>!i', $request->data, $matches)) {
-          $items[$delta]['title'] = $matches[1];
-        }
-      }
+      $item['title'] = url_fetch_title($item['value']);
     }
   }
 }
@@ -245,4 +240,22 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
   }
 
   return $element;
+}
+
+/**
+ * Return the HTML title from an URL.
+ *
+ * @param string $url
+ *   An URL to request with drupal_http_request().
+ *
+ * @return string
+ *   The HTML title of the URL if found.
+ */
+function url_fetch_title($url) {
+  $request = drupal_http_request($item['value']);
+  if (empty($request->error) && $request->code == 200 && !empty($request->data)) {
+    if (preg_match('!<title>(.*?)</title>!i', $request->data, $matches)) {
+      return $matches[1];
+    }
+  }
 }
