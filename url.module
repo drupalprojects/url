@@ -107,13 +107,24 @@ function url_field_widget_info() {
 function url_field_widget_form($form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $settings = $instance['settings'];
 
-  $element['value'] = $element + array(
+  // Display this element in a fieldset if there is only one value.
+  if ($field['cardinality'] == 1) {
+    $element['#type'] = 'fieldset';
+  }
+
+  // URL field value.
+  $element['value'] = array(
     '#type' => 'url',
+    '#title' => t('URL'),
     '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
     '#size' => $instance['widget']['settings']['size'],
     '#maxlength' => 2048,
+    '#required' => !empty($element['#required']),
+    '#prefix' => '<div class="field-value field-value-url">',
+    '#suffix' => '</div>',
   );
 
+  // Title field value.
   if (!empty($settings['title_field'])) {
     $element['title'] = array(
       '#type' => 'textfield',
@@ -121,7 +132,12 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
       '#default_value' => isset($items[$delta]['title']) ? $items[$delta]['title'] : '',
       '#maxlength' => 1024,
       '#weight' => 10,
+      '#prefix' => '<div class="field-value field-value-title">',
+      '#suffix' => '</div>',
     );
+
+    // Add additional styling to make both fields work together visually.
+    $element['#attached']['css'][] = drupal_get_path('module', 'url') . '/url.field.css';
   }
 
   return $element;
