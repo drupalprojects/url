@@ -1,4 +1,4 @@
-name = URL field
+name = URL
 description = Defines a simple URL field type.
 core = 7.x
 dependencies[] = field
