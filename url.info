@@ -1,0 +1,5 @@
+name = URL field
+description = A simple URL field that will be compatible with Drupal 8.
+core = 7.x
+dependencies[] = field
+recommends[] = elements

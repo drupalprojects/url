@@ -1,0 +1,17 @@
+<?php
+
+require_once(dirname(__FILE__) . '/url.field.inc');
+
+/**
+ * Form element validation handler for #type 'url'.
+ *
+ * Note that #maxlength and #required is validated by _form_validate() already.
+ */
+function url_validate_url(&$element, &$form_state) {
+  $value = trim($element['#value']);
+  form_set_value($element, $value, $form_state);
+
+  if ($value !== '' && !valid_url($value, TRUE)) {
+    form_error($element, t('The URL %url is not valid.', array('%url' => $value)));
+  }
+}

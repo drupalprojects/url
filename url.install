@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Implements hook_field_schema().
+ */
+function url_field_schema($field) {
+  $schema['columns']['value'] = array(
+    'description' => 'The URL string.',
+    'type' => 'text',
+    'size' => 'big',
+    'not null' => FALSE,
+  );
+  $schema['columns']['title'] = array(
+    'description' => 'The title of the URL.',
+    'type' => 'varchar',
+    'length' => 1024,
+    'not null' => FALSE,
+  );
+
+  return $schema;
+}
