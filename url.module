@@ -149,6 +149,23 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
 }
 
 /**
+ * Implements hook_field_prepare_view().
+ */
+function url_field_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items) {
+  foreach ($entities as $id => $entity) {
+    foreach ($items[$id] as $delta => &$item) {
+      // Split out the link into the parts required for url(): path and options.
+      $options = drupal_parse_url($item['value']);
+      $item['path'] = $options['path'];
+      $item['options'] = array(
+        'query' => $options['query'],
+        'fragment' => $options['fragment'],
+      );
+    }
+  }
+}
+
+/**
  * Implements hook_field_formatter_info().
  */
 function url_field_formatter_info() {
@@ -210,10 +227,7 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
   $settings = $display['settings'];
 
   foreach ($items as $delta => $item) {
-    // Parse out query string and fragment from the URL value.
-    $options = drupal_parse_url($item['value']);
-
-    // By default use the URL as the link title.
+    // By default use the full URL as the link title.
     $link_title = $item['value'];
 
     // If the title field value is available, use it for the link title.
@@ -231,11 +245,8 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
     $element[$delta] = array(
       '#type' => 'link',
       '#title' => $link_title,
-      '#href' => $options['path'],
-      '#options' => array(
-        'query' => $options['query'],
-        'fragment' => $options['fragment'],
-      ),
+      '#href' => $item['path'],
+      '#options' => $item['options'],
     );
   }
 
