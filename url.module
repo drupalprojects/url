@@ -29,7 +29,7 @@ function url_field_info() {
       'title_field' => 0,
       'title_fetch' => 0,
     ),
-    'default_widget' => 'url_default',
+    'default_widget' => 'url_external',
     'default_formatter' => 'url_default',
   );
 
@@ -90,7 +90,10 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
     // If the link title is empty, and auto-fetching is enabled, then attempt
     // to extract the title from a request to the URL.
     if (!empty($settings['title_fetch']) && !empty($item['value']) && empty($item['title'])) {
-      $item['title'] = url_fetch_title($item['value']);
+      // Parse the URL into a form ready for url().
+      $parsed = drupal_parse_url($item['value']);
+      $url = url($parsed['path'], array('query' => $parsed['query'], 'fragment' => $parsed['fragment']));
+      $item['title'] = url_fetch_title($url);
     }
 
     // Trim any spaces around the URL title.
@@ -105,8 +108,8 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
  * Implements hook_field_widget_info().
  */
 function url_field_widget_info() {
-  $info['url_default'] = array(
-    'label' => t('URL field'),
+  $info['url_external'] = array(
+    'label' => t('External URL field'),
     'field types' => array('url'),
     'settings' => array('size' => 60),
   );
