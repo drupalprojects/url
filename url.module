@@ -76,6 +76,13 @@ function url_field_load($entity_type, $entities, $field, $instances, $langcode, 
 }
 
 /**
+ * Implements hook_field_is_empty().
+ */
+function url_field_is_empty($item, $field) {
+  return !isset($item['value']) || $item['value'] === '';
+}
+
+/**
  * Implements hook_field_presave().
  */
 function url_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
@@ -88,16 +95,12 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
       $item['title'] = url_fetch_title($item['value']);
     }
 
+    // Trim any spaces around the URL title.
+    $item['title'] = trim($item['title']);
+
     // Serialize the attributes array.
     $item['attributes'] = !empty($item['attributes']) ? serialize($item['attributes']) : NULL;
   }
-}
-
-/**
- * Implements hook_field_is_empty().
- */
-function url_field_is_empty($item, $field) {
-  return !isset($item['value']) || $item['value'] === '';
 }
 
 /**
