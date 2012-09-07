@@ -124,11 +124,12 @@ function url_field_widget_settings_form($field, $instance) {
   $settings = $widget['settings'];
 
   $form['size'] = array(
-    '#type' => 'textfield',
+    '#type' => 'number',
     '#title' => t('Size of URL field'),
     '#default_value' => $settings['size'],
     '#required' => TRUE,
-    '#element_validate' => array('element_validate_integer_positive'),
+    '#min' => 1,
+    '#weight' => -1,
   );
 
   return $form;
