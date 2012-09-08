@@ -1,5 +1,6 @@
 name = URL
 description = Defines a simple URL field type.
+package = Fields
 core = 7.x
 dependencies[] = field
 recommends[] = elements
