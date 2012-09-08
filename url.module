@@ -217,6 +217,7 @@ function url_field_formatter_info() {
     'field types' => array('url'),
     'settings' => array(
       'trim_length' => 80,
+      'nofollow' => FALSE,
     ),
   );
 
@@ -239,6 +240,12 @@ function url_field_formatter_settings_form($field, $instance, $view_mode, $form,
     '#element_validate' => array('element_validate_integer_positive'),
   );
 
+  $element['nofollow'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Add rel="nofollow" to all links'),
+    '#default_value' => $settings['nofollow'],
+  );
+
   return $element;
 }
 
@@ -249,16 +256,37 @@ function url_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
 
-  $summary = '';
+  $summary = array();
 
   if (!empty($settings['trim_length'])) {
-    $summary = t('Link text trimmed to @char characters.', array('@char' => $settings['trim_length']));
+    $summary[] = t('Link text trimmed to @char characters.', array('@char' => $settings['trim_length']));
   }
   else {
-    $summary = t('Link text not trimmed.');
+    $summary[] = t('Link text not trimmed.');
   }
 
-  return $summary;
+  if (!empty($settings['nofollow'])) {
+    $summary[] = t('Add rel="nofollow"');
+  }
+
+  return implode('<br />', $summary);
+}
+
+/**
+ * Implements hook_field_formatter_prepare_view().
+ */
+function url_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
+  foreach ($entities as $id => $entity) {
+    $settings = $displays[$id]['settings'];
+
+    foreach ($items[$id] as $delta => &$item) {
+      // If the formatter is configured to add rel="nofollow" to links, then
+      // add them here.
+      if (!empty($settings['nofollow'])) {
+        $item['options']['attributes']['rel'] = 'nofollow';
+      }
+    }
+  }
 }
 
 /**
