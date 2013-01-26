@@ -89,7 +89,8 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
   foreach ($items as $delta => &$item) {
     // If the link title is empty, and auto-fetching is enabled, then attempt
     // to extract the title from a request to the URL.
-    if (!empty($settings['title_fetch']) && !empty($item['value']) && empty($item['title'])) {
+    // Skip this process if $entity is empty (field default value form)
+    if (!empty($entity) && !empty($settings['title_fetch']) && !empty($item['value']) && empty($item['title'])) {
       // Parse the URL into a form ready for url().
       $parsed = drupal_parse_url($item['value']);
       $url = url($parsed['path'], array('query' => $parsed['query'], 'fragment' => $parsed['fragment']));
