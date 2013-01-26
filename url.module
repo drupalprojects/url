@@ -100,7 +100,7 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
     $item['title'] = isset($item['title']) && is_string($item['title']) ? trim($item['title']) : '';
 
     // Serialize the attributes array.
-    $item['attributes'] = !empty($item['attributes']) ? serialize($item['attributes']) : NULL;
+    $item['attributes'] = !empty($item['attributes']) && is_array($item['attributes']) ? serialize($item['attributes']) : NULL;
   }
 }
 
@@ -179,6 +179,12 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
     // Add additional styling to make both fields work together visually.
     $element['#attached']['css'][] = drupal_get_path('module', 'url') . '/url.field.css';
   }
+  else {
+    $element['title'] = array(
+      '#type' => 'value',
+      '#default_value' => isset($items[$delta]['title']) ? $items[$delta]['title'] : '',
+    );
+  }
 
   // Exposing the attributes array in the widget is left for alternate and more
   // advanced field widgets.
@@ -186,6 +192,14 @@ function url_field_widget_form($form, &$form_state, $field, $instance, $langcode
     '#type' => 'value',
     '#value' => !empty($items[$delta]['attributes']) ? $items[$delta]['attributes'] : array(),
   );
+
+  // If the widget is being used on a default value form, due to a core bug we
+  // need to set the attributes default value to be an already serialized
+  // value so that it saves properly.
+  // @todo Remove when http://drupal.org/node/1899498 is fixed.
+  if (empty($element['#entity']) && !isset($items[$delta]['attributes'])) {
+    $element['attributes']['#value'] = NULL;
+  }
 
   return $element;
 }
