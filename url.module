@@ -336,7 +336,7 @@ function url_field_formatter_view($entity_type, $entity, $field, $instance, $lan
 function url_fetch_title($url) {
   $request = drupal_http_request($url);
   if (empty($request->error) && $request->code == 200 && !empty($request->data)) {
-    if (preg_match('!<title>(.*?)</title>!i', $request->data, $matches)) {
+    if (preg_match('!<title>(.*?)</title>!iu', $request->data, $matches)) {
       // Title tags should be encoded, but we want the raw value.
       return decode_entities($matches[1]);
     }
