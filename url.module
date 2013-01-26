@@ -93,7 +93,7 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
     if (!empty($entity) && !empty($settings['title_fetch']) && !empty($item['value']) && empty($item['title'])) {
       // Parse the URL into a form ready for url().
       $parsed = drupal_parse_url($item['value']);
-      $url = url($parsed['path'], array('query' => $parsed['query'], 'fragment' => $parsed['fragment']));
+      $url = url($parsed['path'], array('query' => $parsed['query'], 'fragment' => $parsed['fragment'], 'absolute' => TRUE));
       $item['title'] = url_fetch_title($url);
     }
 
