@@ -97,7 +97,7 @@ function url_field_presave($entity_type, $entity, $field, $instance, $langcode, 
     }
 
     // Trim any spaces around the URL title.
-    $item['title'] = !empty($item['title']) ? trim($item['title']) : '';
+    $item['title'] = isset($item['title']) ? trim($item['title']) : '';
 
     // Serialize the attributes array.
     $item['attributes'] = !empty($item['attributes']) ? serialize($item['attributes']) : NULL;
