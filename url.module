@@ -143,21 +143,24 @@ function url_field_widget_settings_form($field, $instance) {
 function url_field_widget_form($form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $settings = $instance['settings'];
 
+  $single_field = ($field['cardinality'] == 1 && empty($settings['title_field']));
+
   // Display this element in a fieldset if there is only one value.
-  if ($field['cardinality'] == 1) {
+  if ($field['cardinality'] == 1 && !$single_field) {
     $element['#type'] = 'fieldset';
   }
 
   // URL field.
   $element['value'] = array(
     '#type' => 'urlfield', // Assumes elements module is enabled.
-    '#title' => t('URL'),
+    '#title' => $single_field ? $element['#title'] : t('URL'),
     '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : '',
     '#size' => $instance['widget']['settings']['size'],
     '#maxlength' => 2048,
     '#required' => !empty($element['#required']),
     '#prefix' => '<div class="field-value field-value-url">',
     '#suffix' => '</div>',
+    '#description' => $single_field ? $element['#description'] : '',
   );
 
   if (!module_exists('elements')) {
